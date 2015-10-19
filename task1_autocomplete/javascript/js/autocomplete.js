@@ -8,11 +8,6 @@ function Autocomplete(options) {
     document.getElementById("list").appendChild(this.list);
 
     this.events();
-    //this.add_item();
-    //функция обработчик на инпут которая обрабатывает введные данные делает аякс запрос
-    //функция которая получает данные с сервера и
-    // формируется html со списком элементы списка можно выбрать с помощью клика или enter
-    // добавляет выбранный элемент в инпут
 }
 
 Autocomplete.prototype.events = function() {
@@ -89,42 +84,3 @@ function getXmlHttp(){
 function handleError(message) {
     alert("Ошибка: " + message);
 }
-
-//document.getElementById("language").addEventListener("keyup", function() {
-//    var keyword = document.getElementById('language').value;
-//    var list = document.getElementById("language_list_id");
-//    var body = 'keyword=' + encodeURIComponent(keyword);
-//
-//    if (keyword.length > 2) {
-//        var xhr = getXmlHttp();
-//        xhr.open("GET", '/ajax_array.php/ajax_agents?keyword='+keyword, true);
-//        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-//        xhr.onreadystatechange = function() {
-//            if (xhr.readyState != 4) return;
-//
-//            if (xhr.status == 200) {
-//                var thehtml = "";
-//                var resp = JSON.parse(xhr.responseText);
-//                resp.forEach(function (val) {
-//                    thehtml += '<li class="item">' + val + '</li>';
-//                });
-//                list.innerHTML = thehtml;
-//                var item = document.getElementsByClassName("item");
-//                if(item.length) list.style.display = 'block';
-//
-//                for(var i = 0; i < item.length; i++) {
-//                    item[i].addEventListener("click", function() {
-//                        document.getElementById("language").value = this.innerHTML;
-//                        list.style.display = 'none';
-//                    });
-//                }
-//            } else {
-//                handleError(xhr.statusText);
-//            }
-//        }
-//        xhr.send(body);
-//    }
-//    else {
-//        list.style.display = 'none';
-//    }
-//});
