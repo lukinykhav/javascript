@@ -4,21 +4,18 @@ function Autocomplete(options) {
 
     this.list = document.createElement('ul');
     this.list.className = "language_list dropdown-menu";
-
-    document.getElementById("list").appendChild(this.list);
+    this.el.parentNode.appendChild(this.list);
 
     this.events();
 }
 
 Autocomplete.prototype.events = function() {
-    var keyword = this.el;
-    var url = this.url;
-    var list = this.list;
     var self = this;
     this.el.addEventListener("keyup", function() {
-        if (keyword.value.length > 0) {
+        var url = self.url+'?keyword='+self.el.value;
+        if (self.el.value.length > 0) {
             var xhr = getXmlHttp();
-            xhr.open("GET", url+'?keyword='+keyword.value, true);
+            xhr.open("GET", url, true);
             xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xhr.onreadystatechange = function() {
                 if (xhr.readyState != 4) return;
@@ -33,9 +30,16 @@ Autocomplete.prototype.events = function() {
             xhr.send(null);
         }
         else {
-            list.style.display = 'none';
+            self.list.style.display = 'none';
         }
     });
+
+    this.list.addEventListener("click", function(e) {
+        if(e.target.tagName.toUpperCase() == "LI") {
+            self.el.value = e.target.innerHTML;
+            self.list.style.display = 'none';
+        }
+    })
 
 }
 
@@ -47,22 +51,25 @@ Autocomplete.prototype.buildList = function(resp) {
     });
     this.list.innerHTML = thehtml;
 
-    self.add_item();
-}
-
-
-Autocomplete.prototype.add_item = function() {
     var item = document.getElementsByClassName("item");
-    var list = this.list;
     if(item.length) this.list.style.display = 'block';
 
-    for(var i = 0; i < item.length; i++) {
-        item[i].addEventListener("click", function() {
-            document.getElementById("language").value = this.innerHTML;
-            list.style.display = 'none';
-        });
-    }
+    //self.add_item();
 }
+
+
+//Autocomplete.prototype.add_item = function() {
+//    var item = document.getElementsByClassName("item");
+//    var list = this.list;
+//    if(item.length) this.list.style.display = 'block';
+//
+//    for(var i = 0; i < item.length; i++) {
+//        item[i].addEventListener("click", function() {
+//            document.getElementById("language").value = this.innerHTML;
+//            list.style.display = 'none';
+//        });
+//    }
+//}
 
 function getXmlHttp(){
     var xmlhttp;
