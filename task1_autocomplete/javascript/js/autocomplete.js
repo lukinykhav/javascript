@@ -4,43 +4,48 @@ function Autocomplete(options) {
 
     this.list = document.createElement('ul');
     this.list.className = "language_list dropdown-menu";
-    this.el.parentNode.appendChild(this.list);
+    this.wrap(this.el, this.list);
 
     this.events();
 }
 
+Autocomplete.prototype.wrap = function( node, wrapperEl ) {
+    // todo: add ability to wrap collection of elements
+    var parent = node.parentNode;
+    console.log(parent);
+    parent.appendChild( wrapperEl );
+    //wrapperEl.appendChild( node );
+};
+
+
 Autocomplete.prototype.events = function() {
+    this.el.addEventListener("keyup", this.request.bind(this));
+
+    this.list.addEventListener("click", this.add_item.bind(this));
+}
+
+Autocomplete.prototype.request = function() {
+    var url = this.url+'?keyword='+this.el.value;
     var self = this;
-    this.el.addEventListener("keyup", function() {
-        var url = self.url+'?keyword='+self.el.value;
-        if (self.el.value.length > 0) {
-            var xhr = getXmlHttp();
-            xhr.open("GET", url, true);
-            xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState != 4) return;
+    if (this.el.value.length > 0) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", url, true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState != 4) return;
 
-                if (xhr.status == 200) {
-                    var resp = JSON.parse(xhr.responseText);
-                    self.buildList(resp);
-                } else {
-                    handleError(xhr.statusText);
-                }
+            if (xhr.status == 200) {
+                var resp = JSON.parse(xhr.responseText);
+                self.buildList(resp);
+            } else {
+                console.log('error');
             }
-            xhr.send(null);
-        }
-        else {
-            self.list.style.display = 'none';
-        }
-    });
-
-    this.list.addEventListener("click", function(e) {
-        if(e.target.tagName.toUpperCase() == "LI") {
-            self.el.value = e.target.innerHTML;
-            self.list.style.display = 'none';
-        }
-    })
-
+        };
+        xhr.send(null);
+    }
+    else {
+        this.list.style.display = 'none';
+    }
 }
 
 Autocomplete.prototype.buildList = function(resp) {
@@ -54,40 +59,14 @@ Autocomplete.prototype.buildList = function(resp) {
     var item = document.getElementsByClassName("item");
     if(item.length) this.list.style.display = 'block';
 
-    //self.add_item();
+    self.add_item();
 }
 
 
-//Autocomplete.prototype.add_item = function() {
-//    var item = document.getElementsByClassName("item");
-//    var list = this.list;
-//    if(item.length) this.list.style.display = 'block';
-//
-//    for(var i = 0; i < item.length; i++) {
-//        item[i].addEventListener("click", function() {
-//            document.getElementById("language").value = this.innerHTML;
-//            list.style.display = 'none';
-//        });
-//    }
-//}
-
-function getXmlHttp(){
-    var xmlhttp;
-    try {
-        xmlhttp = new ActiveXObject("Msxml2.XMLHTTP");
-    } catch (e) {
-        try {
-            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-        } catch (E) {
-            xmlhttp = false;
-        }
+Autocomplete.prototype.add_item = function(e) {
+    if(e.target.tagName.toUpperCase() == "LI") {
+        this.el.value = e.target.innerHTML;
+        this.list.style.display = 'none';
     }
-    if (!xmlhttp && typeof XMLHttpRequest!='undefined') {
-        xmlhttp = new XMLHttpRequest();
-    }
-    return xmlhttp;
 }
 
-function handleError(message) {
-    alert("Ошибка: " + message);
-}
