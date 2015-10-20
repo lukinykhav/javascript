@@ -13,8 +13,12 @@
 <div class="col-md-6">
     <div class="input-group">
         <span class="input-group-addon">Language</span>
-        <form method="GET" id="list">
+        <form method="GET" id="form">
             <input type="text" class="form-control" id="language" autocomplete="off">
+            <div class="form-row">
+                <label for="" class="form-label"></label>
+                <input type="text" class="form-control" id="city" autocomplete="off">
+            </div>
         </form>
     </div>
 </div>
@@ -24,6 +28,10 @@
         url: "/task1_autocomplete/javascript/ajax_array.php/ajax_agents",
     });
 
+    var autocomplete_city = new Autocomplete({
+        el: document.getElementById('city'),
+        url: "/task1_autocomplete/javascript/flower_array.php/ajax_agents",
+    });
 </script>
 </body>
 </html>
