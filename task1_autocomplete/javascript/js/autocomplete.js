@@ -12,7 +12,6 @@ function Autocomplete(options) {
 Autocomplete.prototype.wrap = function( node, wrapperEl ) {
     // todo: add ability to wrap collection of elements
     var parent = node.parentNode;
-    console.log(parent);
     parent.appendChild( wrapperEl );
     //wrapperEl.appendChild( node );
 };
@@ -50,7 +49,6 @@ Autocomplete.prototype.request = function() {
 
 Autocomplete.prototype.buildList = function(resp) {
     var thehtml = "";
-    var self = this;
     resp.forEach(function (val) {
         thehtml += '<li class="item">' + val + '</li>';
     });
@@ -58,8 +56,6 @@ Autocomplete.prototype.buildList = function(resp) {
 
     var item = document.getElementsByClassName("item");
     if(item.length) this.list.style.display = 'block';
-
-    self.add_item();
 }
 
 
