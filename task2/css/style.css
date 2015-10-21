@@ -1,0 +1,8 @@
+.list {
+    display: none;
+    margin-left: 88px;
+}
+
+.item {
+    cursor: pointer;
+}
