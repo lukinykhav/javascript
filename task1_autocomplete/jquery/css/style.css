@@ -1,0 +1,11 @@
+.list_autocomplete {
+    display: none;
+    margin-left: 88px;
+}
+
+.item {
+    cursor: pointer;
+}
+.active {
+    color: red;
+}
