@@ -29,8 +29,10 @@
 
     // конструктор плагина
     function Plugin( element, options ) {
-        this.element = element;
-        this.source = options;
+        this.el = element;
+        //this.source = options.source;
+
+        this.$el = $(element);
 
         // в jQuery есть метод extend, который
         // объединяет несколько объектов в один,
@@ -43,18 +45,20 @@
         this._name = pluginName;
 
         this.init();
+        this.event();
     }
 
     Plugin.prototype.init = function () {
-        $.el = $(this.element);
-        $.el.parent().append('<ul class="dropdown-menu list_'+ this._name +'"></ul>');
+        this.$el.parent().append('<ul class="dropdown-menu list_'+ this._name +'"></ul>');
         $.list = $(".list_" + this._name);
-
-        $.el.on("keyup",  $.proxy(this.complete, this));
+    };
+    Plugin.prototype.event = function() {
+        this.$el.on("keyup", $.proxy(this.complete, this));
     };
 
     Plugin.prototype.complete = function(e) {
-        var keyword = $.el.val();
+        var keyword = this.$el.val();
+        var self = this;
         if (keyword.length >= 1) {
             var self = this;
             $.get('ajax_array.php?ajax_agents?keyword='+keyword, {keyword:keyword}, function(data){
@@ -66,27 +70,47 @@
         else {
             $.list.hide();
         }
-        $.list.delegate("li", "click", function() {
-            $.el.val($(this).html());
+        $.list.on("click", "li", function() {
+            self.$el.val($(this).html());
             $.list.hide();
         });
 
         if($.list.show()) {
-            if (e.keyCode === 38 || e.keyCode === 40) {
-                    //$(".item")[i].addClass("active");
-                    //if(i) {
-                    //    $("li").next().addClass("active");
-                    //}
-                    //else {
-                    //    $("ul li").first().addClass("active");
-                    //    i++;
-                    //}
-                console.log($(".item"));
-            }
+            //if (e.keyCode === 38 || e.keyCode === 40) {
+            //    //console.log();
+            //    if($("ul li").hasClass("active")) {
+            //        var s = $( "li").next();
+            //        //console.log('sdasd');
+            //        //s.addClass("active");
+            //        //$(this).removeClass("active");
+            //    }
+            //    else {
+            //        //$( "ul li" ).filter( ".active" ); // unordered list items with class of current
+            //        console.log($("li").first());
+            //        //$("li").first().addClass("active");
+            //        var p = $( "li" ).first();
+            //        p.addClass("active");
+            //        console.log(p);
+            //    }
+            //        //$(".item")[i].addClass("active");
+            //        //if(i) {
+            //        //    $("li").next().addClass("active");
+            //        //}
+            //        //else {
+            //        //    $("ul li").first().addClass("active");
+            //        //    i++;
+            //        //}
+            //    //console.log($(".item"));
+            //}
                 //$("ul li").first().removeClass("active");
                 //$("ul li").next().addClass("active");
                 //$(".item").addClass("active");
             //})
+
+            if (e.keyCode == 38) { // up
+                var target = $(e.currentTarget);
+                console.log(target.next().focus());
+            }
         }
     };
 
