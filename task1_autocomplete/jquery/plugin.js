@@ -49,16 +49,96 @@
     }
 
     Plugin.prototype.init = function () {
-        this.$el.parent().append('<ul class="dropdown-menu list_'+ this._name +'"></ul>');
-        $.list = $(".list_" + this._name);
+        this.$el.wrap("<div class='wrap'></div>");
+        this.wrap = this.$el.closest($('.wrap'));
+        //console.log(this.wrap);
+        this.wrap.append('<ul class="dropdown-menu list_'+ this._name +'"></ul>');
+        this.list = $(".list_" + this._name);
     };
     Plugin.prototype.event = function() {
-        this.$el.on("keyup", $.proxy(this.complete, this));
+        this.$el.on("keyup.complete", $.proxy(this.complete, this));
+        this.list.on("click", "li", $.proxy(this.add_item, this));
+        this.$el.on("keydown.move_item", $.proxy(this.move_item, this));
+    };
+
+    Plugin.prototype.add_item = function(e) {
+        this.$el.val(e.target.innerHTML);
+        this.list.hide();
+    };
+
+    Plugin.prototype.move_item = function(e) {
+        var active_item = this.list.find(".active");
+        //console.log(this);
+
+        /* если нажимает клавишу вниз илли вверх
+        если нажимает вниз
+           смотрит существует ли у li класс актив
+             если существует то удаляет у текущего li класс и добавляет к следующему
+             если не существует ищет первый li и добавляет к нему класс
+             если конец списка переходит на первый li
+
+        если нажимает вверх
+        ищет предыдущий li
+        */
+        //if (e.keyCode === 38 || e.keyCode === 40)
+        //{
+        //    if (active_item.length) {
+        //        $("ul li").next().addClass("active");
+        //    }
+        //    else {
+        //        $("ul li").first().addClass("active");
+        //    }
+        //}
+
+        if (e.keyCode === 40) {
+            if (active_item.length) {
+                $(".item").next().addClass("active");
+            }
+            else {
+                $(".item").first().addClass("active");
+            }
+        }
+        //if(this.list.show()) {
+        //
+        //    //if (e.keyCode === 38 || e.keyCode === 40) {
+        //    //    if($("ul li").hasClass("active")) {
+        //    //        var s = $( "li").next();
+        //    //        //console.log('sdasd');
+        //    //        //s.addClass("active");
+        //    //        //$(this).removeClass("active");
+        //    //    }
+        //    //    else {
+        //    //        //$( "ul li" ).filter( ".active" ); // unordered list items with class of current
+        //    //        console.log($("li").first());
+        //    //        //$("li").first().addClass("active");
+        //    //        var p = $( "li" ).first();
+        //    //        p.addClass("active");
+        //    //        console.log(p);
+        //    //    }
+        //    //        //$(".item")[i].addClass("active");
+        //    //        //if(i) {
+        //    //        //    $("li").next().addClass("active");
+        //    //        //}
+        //    //        //else {
+        //    //        //    $("ul li").first().addClass("active");
+        //    //        //    i++;
+        //    //        //}
+        //    //    //console.log($(".item"));
+        //    //}
+        //    //$("ul li").first().removeClass("active");
+        //    //$("ul li").next().addClass("active");
+        //    //$(".item").addClass("active");
+        //    //})
+        //
+        //    if (e.keyCode == 38) { // up
+        //        var target = $(e.currentTarget);
+        //        console.log(target.next().focus());
+        //    }
+        //}
     };
 
     Plugin.prototype.complete = function(e) {
         var keyword = this.$el.val();
-        var self = this;
         if (keyword.length >= 1) {
             var self = this;
             $.get('ajax_array.php?ajax_agents?keyword='+keyword, {keyword:keyword}, function(data){
@@ -68,63 +148,21 @@
             })
         }
         else {
-            $.list.hide();
-        }
-        $.list.on("click", "li", function() {
-            self.$el.val($(this).html());
-            $.list.hide();
-        });
-
-        if($.list.show()) {
-            //if (e.keyCode === 38 || e.keyCode === 40) {
-            //    //console.log();
-            //    if($("ul li").hasClass("active")) {
-            //        var s = $( "li").next();
-            //        //console.log('sdasd');
-            //        //s.addClass("active");
-            //        //$(this).removeClass("active");
-            //    }
-            //    else {
-            //        //$( "ul li" ).filter( ".active" ); // unordered list items with class of current
-            //        console.log($("li").first());
-            //        //$("li").first().addClass("active");
-            //        var p = $( "li" ).first();
-            //        p.addClass("active");
-            //        console.log(p);
-            //    }
-            //        //$(".item")[i].addClass("active");
-            //        //if(i) {
-            //        //    $("li").next().addClass("active");
-            //        //}
-            //        //else {
-            //        //    $("ul li").first().addClass("active");
-            //        //    i++;
-            //        //}
-            //    //console.log($(".item"));
-            //}
-                //$("ul li").first().removeClass("active");
-                //$("ul li").next().addClass("active");
-                //$(".item").addClass("active");
-            //})
-
-            if (e.keyCode == 38) { // up
-                var target = $(e.currentTarget);
-                console.log(target.next().focus());
-            }
+            this.list.hide();
         }
     };
 
     Plugin.prototype.buildList = function(response) {
         var thehtml = "";
-        $.list.html("");
+        this.list.html("");
 
         $(response).each(function(key, val) {
             thehtml += '<li class="item">'+ val + '</li>';
         });
         $('.item').wrap('<ul class="list"></ul>');
 
-        $.list.append(thehtml);
-        $.list.show();
+        this.list.append(thehtml);
+        this.list.show();
     };
 
     // Простой декоратор конструктора,
